@@ -90,11 +90,12 @@ public class AudioPlayer {
 
     public void stop() {
         stayAwake(false);
+        mMusicFile.stop();
     }
 
     public void pause() {
         stayAwake(false);
-
+        mMusicFile.pause();
     }
 
     public void release() {
@@ -108,7 +109,7 @@ public class AudioPlayer {
     }
 
     public void seekTo(int position) {
-
+        mMusicFile.seek(position);
     }
 
     /**
@@ -174,7 +175,7 @@ public class AudioPlayer {
             String dir = file.getParent() + "/";
             // 开始初始哈地图，背景音乐，音效等等
             mBeatmap = new Beatmap(path);
-            mMusicFile = new MusicFile(dir + mBeatmap.getAudioFileName(), mLooper);
+            mMusicFile = new MusicFile(this, dir + mBeatmap.getAudioFileName(), mLooper);
             mHitEffect = new HitEffectPlayer(mMusicFile, mBeatmap);  // 将音效与背景音乐绑定
         } else {
             throw new IOException("Can't open file, a wrong path was specified.");
@@ -338,6 +339,8 @@ public class AudioPlayer {
     {
         mOnCompletionListener = listener;
     }
+
+    public OnCompletionListener getOnCompletionListener() { return mOnCompletionListener; }
 
     private OnCompletionListener mOnCompletionListener;
 }

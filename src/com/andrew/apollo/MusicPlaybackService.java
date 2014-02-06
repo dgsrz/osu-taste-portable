@@ -548,8 +548,12 @@ public class MusicPlaybackService extends Service {
      */
     @Override
     public void onCreate() {
-        if (D) Log.d(TAG, "Creating service");
         super.onCreate();
+
+        if (D) {
+            Log.d(TAG, "Creating service");
+        }
+
 
         // Initialize the favorites and recents databases
         // 初始化收藏夹和最后播放数据库
@@ -1216,6 +1220,7 @@ public class MusicPlaybackService extends Service {
         if (D) Log.d(TAG, "setNextTrack: next play position = " + mNextPlayPos);
         if (mNextPlayPos >= 0 && mPlayList != null) {
             final long id = mPlayList[mNextPlayPos];
+            if (D) Log.d(TAG, "setNextTrack: set id = " + id);
             mPlayer.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
         } else {
             mPlayer.setNextDataSource(null);
@@ -1710,6 +1715,7 @@ public class MusicPlaybackService extends Service {
      */
     public int removeTrack(final long id) {
         int numremoved = 0;
+        if (D) Log.i(TAG, "RemoveTrack: " + id + " removed");
         synchronized (this) {
             for (int i = 0; i < mPlayListLen; i++) {
                 if (mPlayList[i] == id) {
@@ -1863,6 +1869,7 @@ public class MusicPlaybackService extends Service {
      */
     public long getAudioId() {
         synchronized (this) {
+            if (D) Log.i(TAG, "GET audioId = " + mPlayPos + ", Init: " + mPlayer.isInitialized());
             if (mPlayPos >= 0 && mPlayer.isInitialized()) {
                 return mPlayList[mPlayPos];
             }
@@ -2553,6 +2560,7 @@ public class MusicPlaybackService extends Service {
          */
         private boolean setDataSourceImpl(final AudioPlayer player, final String path) {
             try {
+                if (D) Log.i(TAG, "SET nextPath: " + path);
                 player.reset();
                 player.setOnPreparedListener(null);
                 // if (path.startsWith("content://")) {

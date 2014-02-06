@@ -14,6 +14,7 @@ package net.moesky.osuplayer.media;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import com.un4seen.bass.*;
 
 /**
@@ -21,26 +22,46 @@ import com.un4seen.bass.*;
  */
 public class MusicFile {
 
+    private final static String TAG = "MusicPlayer";
+    private final static boolean D = true;
+
     /* Handler执行周期，数值越小越接近原始osu听感，同时更消耗系统资源 */
     private final static int INTERVAL = 5;
 
     /* 取消与HitSoundEffect同步 */
     private final static int EVENT_CANCEL_SYNC = 1;
 
+    private AudioPlayer mAudioPlayer;
     private String mFileName;
     private int mStream;
-    private Handler mHandler;
+    private Handler mHandler;  // FIXME: 使用弱引用便于检查空指针
 
-    public MusicFile(final String fileName, final Looper looper) {
+    public MusicFile(final AudioPlayer audioPlayer, final String fileName, final Looper looper) {
         BASS.BASS_StreamFree(mStream);
+        mAudioPlayer = audioPlayer;
         mFileName = fileName;
         mStream = BASS.BASS_StreamCreateFile(mFileName, 0, 0, 0);
-        mHandler = new Handler(looper);
+        mHandler = new Handler(looper) {
+            @Override
+            public void handleMessage(Message msg) {
+                if (D) Log.i(TAG, "Received cancel handler request.");
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case EVENT_CANCEL_SYNC:
+                        this.removeCallbacks(refresh);
+                        break;
+                }
+            }
+        };
     }
 
     private Runnable refresh = new Runnable() {
         @Override
         public void run() {
+            if (getChannelPosition() >= getChannelLength()) {
+                mAudioPlayer.getOnCompletionListener();
+                return;
+            }
             mOnUpdateListener.onUpdate();
             mHandler.postDelayed(refresh, MusicFile.INTERVAL);
         }
@@ -48,8 +69,8 @@ public class MusicFile {
 
     public void play() {
         if (mStream != 0) {
-            BASS.BASS_ChannelPlay(mStream, true);
-            mHandler.postDelayed(refresh, MusicFile.INTERVAL);
+            BASS.BASS_ChannelPlay(mStream, false);
+            mHandler.post(refresh);
         }
     }
 
@@ -64,6 +85,13 @@ public class MusicFile {
         if (isPlaying()) {
             BASS.BASS_ChannelPause(mStream);
             mHandler.sendEmptyMessage(EVENT_CANCEL_SYNC);
+        }
+    }
+
+    public void seek(int position) {
+        if (isPlaying())
+        {
+            BASS.BASS_ChannelSetPosition(mStream, BASS.BASS_ChannelSeconds2Bytes(mStream, position), BASS.BASS_POS_BYTE);
         }
     }
 

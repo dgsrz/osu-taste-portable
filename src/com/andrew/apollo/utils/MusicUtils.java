@@ -457,7 +457,7 @@ public final class MusicUtils {
             if (mService != null) {
                 return mService.removeTrack(id);
             }
-        } catch (final RemoteException ingored) {
+        } catch (final RemoteException ignored) {
         }
         return 0;
     }
@@ -598,6 +598,24 @@ public final class MusicUtils {
         }
     }
 
+
+    /**
+     * @param context The {@link Context} to use
+     * @param path The source of the file
+     */
+    public static void playFile(final Context context, final String path) {
+        if (path == null || mService == null) {
+            return;
+        }
+
+        try {
+            mService.stop();
+            mService.openFile(path);
+            mService.play();
+        } catch (final RemoteException ignored) {
+        }
+    }
+
     /**
      * @param context The {@link Context} to use.
      * @param list The list of songs to play.
@@ -605,7 +623,7 @@ public final class MusicUtils {
      * @param forceShuffle True to force a shuffle, false otherwise.
      */
     public static void playAll(final Context context, final long[] list, int position,
-            final boolean forceShuffle) {
+                               final boolean forceShuffle) {
         if (list.length == 0 || mService == null) {
             return;
         }

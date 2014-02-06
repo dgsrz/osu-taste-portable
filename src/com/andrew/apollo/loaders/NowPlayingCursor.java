@@ -12,6 +12,7 @@ import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AudioColumns;
 
+import com.andrew.apollo.provider.OsuFileStore;
 import com.andrew.apollo.utils.ApolloUtils;
 import com.andrew.apollo.utils.MusicUtils;
 
@@ -24,7 +25,7 @@ import java.util.Arrays;
 @SuppressLint("NewApi")
 public class NowPlayingCursor extends AbstractCursor {
 
-    private static final String[] PROJECTION = new String[] {
+    private static final String[] PROJECTION_THROWN = new String[] {
             /* 0 */
             BaseColumns._ID,
             /* 1 */
@@ -33,6 +34,12 @@ public class NowPlayingCursor extends AbstractCursor {
             AudioColumns.ARTIST,
             /* 3 */
             AudioColumns.ALBUM
+    };
+
+    private static final String[] PROJECTION = new String[] {
+            OsuFileStore.OsuFileColumns.ID + " AS _id", OsuFileStore.OsuFileColumns.ARTISTNAME,
+            OsuFileStore.OsuFileColumns.DIRNAME, OsuFileStore.OsuFileColumns.SONGNAME,
+            OsuFileStore.OsuFileColumns.FILENAME, OsuFileStore.OsuFileColumns.DIFFNAME
     };
 
     private final Context mContext;
@@ -219,7 +226,7 @@ public class NowPlayingCursor extends AbstractCursor {
         }
 
         final StringBuilder selection = new StringBuilder();
-        selection.append(MediaStore.Audio.Media._ID + " IN (");
+        selection.append(BaseColumns._ID + " IN (");
         for (int i = 0; i < mSize; i++) {
             selection.append(mNowPlaying[i]);
             if (i < mSize - 1) {
@@ -228,9 +235,13 @@ public class NowPlayingCursor extends AbstractCursor {
         }
         selection.append(")");
 
-        mQueueCursor = mContext.getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection.toString(),
-                null, MediaStore.Audio.Media._ID);
+        mQueueCursor = OsuFileStore.getInstance(mContext).getReadableDatabase().query(
+                OsuFileStore.OsuFileColumns.NAME, PROJECTION, selection.toString(), null, null, null,
+                BaseColumns._ID);
+
+//        mQueueCursor = mContext.getContentResolver().query(
+//                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, PROJECTION, selection.toString(),
+//                null, MediaStore.Audio.Media._ID);
 
         if (mQueueCursor == null) {
             mSize = 0;
@@ -240,7 +251,7 @@ public class NowPlayingCursor extends AbstractCursor {
         final int playlistSize = mQueueCursor.getCount();
         mCursorIndexes = new long[playlistSize];
         mQueueCursor.moveToFirst();
-        final int columnIndex = mQueueCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+        final int columnIndex = mQueueCursor.getColumnIndexOrThrow(BaseColumns._ID);
         for (int i = 0; i < playlistSize; i++) {
             mCursorIndexes[i] = mQueueCursor.getLong(columnIndex);
             mQueueCursor.moveToNext();
