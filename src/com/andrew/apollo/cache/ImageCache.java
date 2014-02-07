@@ -440,6 +440,22 @@ public final class ImageCache {
         return null;
     }
 
+
+    public final Bitmap getCachedArtwork(final Context context, final String data, final String path) {
+        if (context == null || data == null) {
+            return null;
+        }
+        Bitmap cachedImage = getCachedBitmap(data);
+        if (cachedImage == null && path != null) {
+            cachedImage = getArtworkFromFile(context, path);
+        }
+        if (cachedImage != null) {
+            addBitmapToMemCache(data, cachedImage);
+            return cachedImage;
+        }
+        return null;
+    }
+
     /**
      * Used to fetch the artwork for an album locally from the user's device
      *
@@ -465,6 +481,24 @@ public final class ImageCache {
             // Log.e(TAG, "IllegalStateExcetpion - getArtworkFromFile - ", e);
         } catch (final FileNotFoundException e) {
             // Log.e(TAG, "FileNotFoundException - getArtworkFromFile - ", e);
+        } catch (final OutOfMemoryError evict) {
+            // Log.e(TAG, "OutOfMemoryError - getArtworkFromFile - ", evict);
+            evictAll();
+        }
+        return artwork;
+    }
+
+    public final Bitmap getArtworkFromFile(final Context context, final String path) {
+        if (path == null) {
+            return null;
+        }
+        Bitmap artwork = null;
+        waitUntilUnpaused();
+        try {
+        	// 这里可能引起OutOfMemory异常
+            artwork = BitmapFactory.decodeFile(path);
+        } catch (final IllegalStateException e) {
+            // Log.e(TAG, "IllegalStateExcetpion - getArtworkFromFile - ", e);
         } catch (final OutOfMemoryError evict) {
             // Log.e(TAG, "OutOfMemoryError - getArtworkFromFile - ", evict);
             evictAll();

@@ -27,6 +27,7 @@ interface IApolloService
     long getAudioId();
     long getArtistId();
     long getAlbumId();
+    String getStoryBoard();
     String getArtistName();
     String getTrackName();
     String getAlbumName();

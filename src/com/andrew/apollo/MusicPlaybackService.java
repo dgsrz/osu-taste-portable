@@ -42,7 +42,6 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio.AlbumColumns;
-import android.provider.MediaStore.Audio.AudioColumns;
 import android.util.Log;
 
 import com.andrew.apollo.appwidgets.AppWidgetLarge;
@@ -1774,6 +1773,16 @@ public class MusicPlaybackService extends Service {
     }
 
     /**
+     * Returns the path of StoryBoard to the current song
+     */
+    public String getStoryBoard() {
+        if (mPlayer.isInitialized()) {
+            return mPlayer.getStoryBoard();
+        }
+        return "-1";
+    }
+
+    /**
      * Returns the album name
      *
      * @return The current song album Name
@@ -1876,6 +1885,8 @@ public class MusicPlaybackService extends Service {
         }
         return -1;
     }
+
+
 
     /**
      * Seeks the current track to a specific time
@@ -2670,6 +2681,13 @@ public class MusicPlaybackService extends Service {
         }
 
         /**
+         * Gets the path of the StoryBoard to current song
+         */
+        public String getStoryBoard() {
+            return mCurrentMediaPlayer.getStoryBoard();
+        }
+
+        /**
          * Gets the current playback position.
          *
          * @param whereto The offset in milliseconds from the start to seek to
@@ -2941,6 +2959,14 @@ public class MusicPlaybackService extends Service {
         @Override
         public long getAlbumId() throws RemoteException {
             return mService.get().getAlbumId();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getStoryBoard() throws RemoteException {
+            return mService.get().getStoryBoard();
         }
 
         /**

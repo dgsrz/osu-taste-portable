@@ -160,6 +160,15 @@ public class ImageFetcher extends ImageWorker {
     }
 
     /**
+     * Used to fetch the current StoryBoard.
+     */
+    public void loadCurrentStoryBoard(final ImageView imageView) {
+        loadImage(generateAlbumCacheKey(MusicUtils.getAlbumName(), MusicUtils.getArtistName()),
+                MusicUtils.getArtistName(), MusicUtils.getAlbumName(), MusicUtils.getCurrentStoryBoardPath(),
+                imageView, ImageType.STORYBOARD);
+    }
+
+    /**
      * Used to fetch artist images.
      */
     public void loadArtistImage(final String key, final ImageView imageView) {

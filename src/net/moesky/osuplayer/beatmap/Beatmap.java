@@ -11,6 +11,7 @@
 
 package net.moesky.osuplayer.beatmap;
 
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.*;
@@ -90,7 +91,7 @@ public class Beatmap {
                 } else if (title.equals("Difficulty")) {
                     ParseDifficulty(buff);
                 } else if (title.equals("Events")) {
-                    // TODO: Background, StoryBoard, etc.
+                    ParseEvent(buff);
                 } else if (title.equals("TimingPoints")) {
                     ParseTimingPoints(buff);
                 } else if (title.equals("HitObjects")) {
@@ -164,6 +165,25 @@ public class Beatmap {
 
             if (key.toString().equals("SliderMultiplier")) {
                 sliderMultiplier = Float.parseFloat(value.toString());
+            }
+        }
+    }
+
+    private void ParseEvent(BufferedReader buff) throws IOException {
+        String line;
+        String info[];
+        while ((line = buff.readLine()) != null) {
+            line = line.trim();
+            if (line.equals("")) return;
+
+            if (line.contains(",")) {
+                info = line.split(",");
+                Pattern pattern = Pattern.compile("[^\"]+\\.(jpg|png)");
+                Matcher matcher = pattern.matcher(line);
+                if (info[0].equals("0") && matcher.find()) {
+                    background = matcher.group(0);
+                    Log.i("BeatmapParse", background);
+                }
             }
         }
     }
@@ -260,6 +280,10 @@ public class Beatmap {
 
     public String getAudioFileName() {
         return audioFileName;
+    }
+
+    public String getStoryBoard() {
+        return background;
     }
 
 }

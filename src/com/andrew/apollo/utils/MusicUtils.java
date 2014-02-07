@@ -395,6 +395,16 @@ public final class MusicUtils {
         return -1;
     }
 
+    public static final String getCurrentStoryBoardPath() {
+        if (mService != null) {
+            try {
+                return mService.getStoryBoard();
+            } catch (final RemoteException ignored) {
+            }
+        }
+        return "-1";
+    }
+
     /**
      * @return The current song Id.
      */

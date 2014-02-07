@@ -20,6 +20,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.andrew.apollo.R;
@@ -219,13 +220,24 @@ public abstract class ImageWorker {
             }
 
             // Define the album id now
-            mAlbumId = Long.valueOf(params[3]);
+            String path = params[3];
+            Log.i("ImageWorker", "LoadBg: " + path);
 
             // Second, if we're fetching artwork, check the device for the image
-            if (bitmap == null && mImageType.equals(ImageType.ALBUM) && mAlbumId >= 0
+            if (bitmap == null && mImageType.equals(ImageType.ALBUM)
                     && mKey != null && !isCancelled() && getAttachedImageView() != null
                     && mImageCache != null) {
-                bitmap = mImageCache.getCachedArtwork(mContext, mKey, mAlbumId);
+                mAlbumId = Long.valueOf(params[3]);
+                if (mAlbumId >= 0) {
+                    bitmap = mImageCache.getCachedArtwork(mContext, mKey, mAlbumId);
+                }
+            }
+            if (bitmap == null && mImageType.equals(ImageType.STORYBOARD) && path != null
+                    && mKey != null && !isCancelled() && getAttachedImageView() != null
+                    && mImageCache != null) {
+                mArtistName = params[1];
+                mAlbumName = params[2];
+                bitmap = mImageCache.getCachedArtwork(mContext, mKey, mAlbumName + "/" + path);
             }
 
             // Third, by now we need to download the image
@@ -380,7 +392,7 @@ public abstract class ImageWorker {
      * @param imageType The type of image URL to fetch for.
      */
     protected void loadImage(final String key, final String artistName, final String albumName,
-            final long albumId, final ImageView imageView, final ImageType imageType) {
+                              final long albumId, final ImageView imageView, final ImageType imageType) {
         if (key == null || mImageCache == null || imageView == null) {
             return;
         }
@@ -398,6 +410,39 @@ public abstract class ImageWorker {
             imageView.setImageDrawable(asyncDrawable);
             ApolloUtils.execute(false, bitmapWorkerTask, key,
                     artistName, albumName, String.valueOf(albumId));
+        }
+    }
+
+    /**
+     * Called to fetch the artist or ablum art.
+     *
+     * @param key The unique identifier for the image.
+     * @param artistName The artist name for the Last.fm API.
+     * @param albumName The album name for the Last.fm API.
+     * @param albumId The album art index, to check for missing artwork.
+     * @param imageView The {@link ImageView} used to set the cached
+     *            {@link Bitmap}.
+     * @param imageType The type of image URL to fetch for.
+     */
+    protected void loadImage(final String key, final String artistName, final String albumName,
+                             final String storyBoard, final ImageView imageView, final ImageType imageType) {
+        if (key == null || mImageCache == null || imageView == null) {
+            return;
+        }
+        // First, check the memory for the image
+        final Bitmap lruBitmap = mImageCache.getBitmapFromMemCache(key);
+        if (lruBitmap != null && imageView != null) {
+            // Bitmap found in memory cache
+            imageView.setImageBitmap(lruBitmap);
+        } else if (executePotentialWork(key, imageView)
+                && imageView != null && !mImageCache.isDiskCachePaused()) {
+            // Otherwise run the worker task
+            final BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView, imageType);
+            final AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, mDefault,
+                    bitmapWorkerTask);
+            imageView.setImageDrawable(asyncDrawable);
+            ApolloUtils.execute(false, bitmapWorkerTask, key,
+                    artistName, albumName, storyBoard);
         }
     }
 
@@ -428,7 +473,7 @@ public abstract class ImageWorker {
      * Used to define what type of image URL to fetch for, artist or album.
      */
     public enum ImageType {
-        ARTIST, ALBUM;
+        ARTIST, ALBUM, STORYBOARD;
     }
 
 }

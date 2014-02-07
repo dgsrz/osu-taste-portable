@@ -112,6 +112,10 @@ public class AudioPlayer {
         mMusicFile.seek(position);
     }
 
+    public String getStoryBoard() {
+        return mBeatmap.getStoryBoard();
+    }
+
     /**
      * 设定下一个文件的路径
      *

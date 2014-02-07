@@ -14,20 +14,20 @@ import com.andrew.apollo.provider.OsuFileStore;
 public final class DebugUtils {
 
     private static String folders = "/sdcard/osu!Player";
-    private static String files[] = { "guilty", "dash", "test", "fate", "ga", "vid" };
+    private static String files[] = { "guilty", "dash", "Sakakibara Yui - Cocoro Root", "fate", "ga", "vid" };
 
     public static void GenerateSomeJunkFolders(final Context context) {
         Directory directories[] = new Directory[1];
         Song songs[] = new Song[6];
 
         Directory directory = new Directory(0
-                , folders, "dgsrz", 0, System.currentTimeMillis());
+                , folders, "Insane", 0, System.currentTimeMillis());
         directories[0] = directory;
         DirectoryStore.getInstance(context).addDirCollection(directories);
 
         int id = 0;
         for (String str : files) {
-            Song song = new Song(0, folders, str + ".osu", str, "Insane", "dgsrz");
+            Song song = new Song(0, folders, str + ".osu", str, "Insane", "Insane");
             songs[id] = song;
             id++;
         }
