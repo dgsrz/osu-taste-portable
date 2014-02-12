@@ -144,7 +144,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements
     @Override
     public void onPrepareOptionsMenu(final Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        mResources.setFavoriteIcon(menu);
+        mResources.setReloadIcon(menu);
     }
 
     /**
@@ -154,7 +154,8 @@ public class MusicBrowserPhoneFragment extends Fragment implements
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         // Favorite action
-        inflater.inflate(R.menu.favorite, menu);
+        // 更改：在列表界面中修改显示为刷新歌曲库
+        inflater.inflate(R.menu.reload, menu);
         // Shuffle all
         inflater.inflate(R.menu.shuffle, menu);
         // Sort orders
@@ -186,6 +187,7 @@ public class MusicBrowserPhoneFragment extends Fragment implements
             case R.id.menu_favorite:
                 // Toggle the current track as a favorite and update the menu
                 // item
+                // TODO: 这里需要修改为刷新曲库
                 MusicUtils.toggleFavorite();
                 getActivity().invalidateOptionsMenu();
                 return true;

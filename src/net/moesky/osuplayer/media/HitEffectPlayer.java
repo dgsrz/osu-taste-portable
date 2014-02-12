@@ -109,4 +109,8 @@ public class HitEffectPlayer implements MusicFile.onUpdateListener {
             ++mPos;
         }
     }
+
+    public void reset() {
+        mPos = 0;
+    }
 }

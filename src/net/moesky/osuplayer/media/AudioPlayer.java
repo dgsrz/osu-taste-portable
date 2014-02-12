@@ -59,7 +59,7 @@ public class AudioPlayer {
 
     public void start() {
         stayAwake(true);
-        if (D) Log.d(TAG, "Start play: " + mMusicFile.getFileName());
+        if (D) Log.d(TAG, "Player start play: " + mMusicFile.getFileName());
         if (mMusicFile != null) {
             mMusicFile.play();
         }
@@ -77,6 +77,7 @@ public class AudioPlayer {
     }
 
     public void reset() {
+        if (D) Log.d(TAG, "Player resettled.");
         stayAwake(false);
         updateSurfaceScreenOn();
         mOnPreparedListener = null;
@@ -89,16 +90,19 @@ public class AudioPlayer {
     }
 
     public void stop() {
+        if (D) Log.d(TAG, "Player stopped.");
         stayAwake(false);
         mMusicFile.stop();
     }
 
     public void pause() {
+        if (D) Log.d(TAG, "Player paused.");
         stayAwake(false);
         mMusicFile.pause();
     }
 
     public void release() {
+        if (D) Log.d(TAG, "Player released.");
         stayAwake(false);
         updateSurfaceScreenOn();
         mOnPreparedListener = null;
@@ -109,7 +113,9 @@ public class AudioPlayer {
     }
 
     public void seekTo(int position) {
+        if (D) Log.d(TAG, "Player seed to: " + position);
         mMusicFile.seek(position);
+        mHitEffect.reset();
     }
 
     public String getStoryBoard() {

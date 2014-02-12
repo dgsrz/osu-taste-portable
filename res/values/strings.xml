@@ -52,6 +52,7 @@
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="remove_from_recent">Remove from recent</string>
     <string name="remove_from_queue">Remove from queue</string>
+    <string name="refresh_library">Refresh library</string>
 
     <!-- Sort orders -->
     <string name="sort_order_entry_az">A-Z</string>

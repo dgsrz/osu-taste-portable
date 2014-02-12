@@ -26,7 +26,7 @@ public class MusicFile {
     private final static boolean D = true;
 
     /* Handler执行周期，数值越小越接近原始osu听感，同时更消耗系统资源 */
-    private final static int INTERVAL = 5;
+    private final static int INTERVAL = 1;
 
     /* 取消与HitSoundEffect同步 */
     private final static int EVENT_CANCEL_SYNC = 1;
@@ -91,7 +91,8 @@ public class MusicFile {
     public void seek(int position) {
         if (isPlaying())
         {
-            BASS.BASS_ChannelSetPosition(mStream, BASS.BASS_ChannelSeconds2Bytes(mStream, position), BASS.BASS_POS_BYTE);
+            double sec = position / 1000.0;
+            BASS.BASS_ChannelSetPosition(mStream, BASS.BASS_ChannelSeconds2Bytes(mStream, sec), BASS.BASS_POS_BYTE);
         }
     }
 

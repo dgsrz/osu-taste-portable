@@ -269,6 +269,25 @@ public class ThemeUtils {
         }
     }
 
+
+    /**
+     * Sets the {@link MenuItem} icon for the reload action.
+     *
+     * @param context The {@link Context} to use.
+     * @param favorite The favorites action.
+     *
+     * TODO: 这块功能需要重写
+     */
+    public void setReloadIcon(final Menu reload) {
+        final MenuItem favoriteAction = reload.findItem(R.id.menu_favorite);
+        final String favoriteIconId = "ic_action_reload";
+        if (MusicUtils.isFavorite()) {
+            setMenuItemColor(favoriteAction, "favorite_selected", favoriteIconId);
+        } else {
+            setMenuItemColor(favoriteAction, "favorite_normal", favoriteIconId);
+        }
+    }
+
     /**
      * Sets the {@link MenuItem} icon for the search action.
      * 
