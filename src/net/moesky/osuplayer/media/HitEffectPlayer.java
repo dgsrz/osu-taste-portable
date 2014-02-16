@@ -21,18 +21,18 @@ import net.moesky.osuplayer.beatmap.Beatmap;
  *
  * @author dgsrz (dgsrz@vip.qq.com)
  */
-public class HitEffectPlayer implements MusicFile.onUpdateListener {
+public class HitEffectPlayer implements AudioPlayer.onUpdateListener {
 
     private static String TAG = "HitEffectPlayer";
     private static boolean D = true;
 
     private Beatmap mBeatmap;
-    private MusicFile mAudioPlayer;
+    private AudioPlayer mAudioPlayer;
     private SampleFile mSoftSamples[];
     private SampleFile mNormalSamples[];
     private int mPos = 0;
 
-    public HitEffectPlayer(MusicFile audioPlayer, Beatmap beatmap) {
+    public HitEffectPlayer(AudioPlayer audioPlayer, Beatmap beatmap) {
         mBeatmap = beatmap;
         mAudioPlayer = audioPlayer;
         audioPlayer.setOnUpdateListener(this);
@@ -62,7 +62,16 @@ public class HitEffectPlayer implements MusicFile.onUpdateListener {
      * 清理音效播放器占用的资源
      */
     public void release() {
-
+        for (int i = 0; i < 4; i++) {
+            mSoftSamples[i].release();
+            mNormalSamples[i].release();
+            mSoftSamples[i] = null;
+            mNormalSamples[i] = null;
+        }
+        mSoftSamples = null;
+        mNormalSamples = null;
+        mBeatmap = null;
+        mAudioPlayer = null;
     }
 
     /**
@@ -71,10 +80,8 @@ public class HitEffectPlayer implements MusicFile.onUpdateListener {
     @Override
     public void onUpdate() {
         // do play hit effects
-        long length = mAudioPlayer.getChannelLength();
-        long position = mAudioPlayer.getChannelPosition();
-        double total = mAudioPlayer.Bytes2Second(length);
-        double elapsed = mAudioPlayer.Bytes2Second(position);
+        double total = mAudioPlayer.getDuration();
+        double elapsed = mAudioPlayer.getCurrentPosition();
 
         while (mPos < mBeatmap.getHitObjects().size()
                 && (elapsed * 1000 >= mBeatmap.getHitObjects().get(mPos).getTime()

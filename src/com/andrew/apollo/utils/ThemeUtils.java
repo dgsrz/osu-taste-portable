@@ -279,13 +279,13 @@ public class ThemeUtils {
      * TODO: 这块功能需要重写
      */
     public void setReloadIcon(final Menu reload) {
-        final MenuItem favoriteAction = reload.findItem(R.id.menu_favorite);
-        final String favoriteIconId = "ic_action_reload";
-        if (MusicUtils.isFavorite()) {
-            setMenuItemColor(favoriteAction, "favorite_selected", favoriteIconId);
-        } else {
-            setMenuItemColor(favoriteAction, "favorite_normal", favoriteIconId);
-        }
+//        final MenuItem favoriteAction = reload.findItem(R.id.menu_favorite);
+//        final String favoriteIconId = "ic_action_reload";
+//        if (MusicUtils.isFavorite()) {
+//            setMenuItemColor(favoriteAction, "favorite_selected", favoriteIconId);
+//        } else {
+//            setMenuItemColor(favoriteAction, "favorite_normal", favoriteIconId);
+//        }
     }
 
     /**

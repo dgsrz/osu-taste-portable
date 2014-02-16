@@ -2546,7 +2546,7 @@ public class MusicPlaybackService extends Service {
         public MultiPlayer(final MusicPlaybackService service, final Looper looper) {
             mService = new WeakReference<MusicPlaybackService>(service);
             mLooper = looper;
-            mCurrentMediaPlayer = new AudioPlayer(mLooper);
+            mCurrentMediaPlayer = AudioPlayer.getInstance(mLooper);
             mCurrentMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK);
             mCurrentMediaPlayer.CreateDevice();
         }
@@ -2573,7 +2573,7 @@ public class MusicPlaybackService extends Service {
             try {
                 if (D) Log.i(TAG, "SET nextPath: " + path);
                 player.reset();
-                player.setOnPreparedListener(null);
+                // player.setOnPreparedListener(null);
                 // if (path.startsWith("content://")) {
                 //     player.setDataSource(mService.get(), Uri.parse(path));
                 // } else {
@@ -2668,7 +2668,7 @@ public class MusicPlaybackService extends Service {
          * @return The duration in milliseconds
          */
         public long duration() {
-            return mCurrentMediaPlayer.getDuration();
+            return (long)(mCurrentMediaPlayer.getDuration() * 1000);
         }
 
         /**
@@ -2677,7 +2677,7 @@ public class MusicPlaybackService extends Service {
          * @return The current position in milliseconds
          */
         public long position() {
-            return mCurrentMediaPlayer.getCurrentPosition();
+            return (long)(mCurrentMediaPlayer.getCurrentPosition() * 1000);
         }
 
         /**
@@ -2737,7 +2737,9 @@ public class MusicPlaybackService extends Service {
                 case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                     mIsInitialized = false;
                     mCurrentMediaPlayer.release();
-                    mCurrentMediaPlayer = new AudioPlayer(mLooper);
+                    mCurrentMediaPlayer = null;
+                    mCurrentMediaPlayer = AudioPlayer.getInstance(mLooper);
+                    mCurrentMediaPlayer.CreateDevice();
                     mCurrentMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK);
                     mHandler.sendMessageDelayed(mHandler.obtainMessage(SERVER_DIED), 2000);
                     return true;

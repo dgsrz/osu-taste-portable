@@ -19,36 +19,46 @@ import com.un4seen.bass.*;
  */
 public class SampleFile {
 
-    private int channel;
-    private int sample = 0;
+    private int mChannel;
+    private int mSample = 0;
 
     public SampleFile(String fileName) {
-        BASS.BASS_SampleFree(sample);
+        BASS.BASS_SampleFree(mSample);
         if (fileName != null && !fileName.equals("")) {
             // 最大通道数64，优先淘汰最后播放
-            sample = BASS.BASS_SampleLoad(fileName, 0, 0, 64, BASS.BASS_SAMPLE_OVER_POS);
+            mSample = BASS.BASS_SampleLoad(fileName, 0, 0, 64, BASS.BASS_SAMPLE_OVER_POS);
         }
-        if (sample == 0) {
+        if (mSample == 0) {
             Log.e("SampleLoad", "ErrorCode: " + BASS.BASS_ErrorGetCode());
         }
     }
 
     public boolean play() {
-        channel = BASS.BASS_SampleGetChannel(sample, false);
-        if (sample != 0) {
-            BASS.BASS_ChannelPlay(channel, false);
+        mChannel = BASS.BASS_SampleGetChannel(mSample, false);
+        if (mSample != 0) {
+            BASS.BASS_ChannelPlay(mChannel, false);
         }
         return true;
     }
 
+    /**
+     * 完全释放播放器资源，等待GC回收内存
+     */
+    public void release() {
+        BASS.BASS_StreamFree(mChannel);
+        mChannel = 0;
+    }
+
     public float getVolume() {
         Float volume = 1.0f;
-        BASS.BASS_ChannelGetAttribute(channel, BASS.BASS_ATTRIB_VOL, volume);
+        BASS.BASS_ChannelGetAttribute(mChannel, BASS.BASS_ATTRIB_VOL, volume);
         return volume;
     }
 
     public void setVolume(float volume) {
-        BASS.BASS_ChannelSetAttribute(channel, BASS.BASS_ATTRIB_VOL, volume);
+        BASS.BASS_ChannelSetAttribute(mChannel, BASS.BASS_ATTRIB_VOL, volume);
     }
+
+
 
 }

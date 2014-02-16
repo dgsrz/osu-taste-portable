@@ -11,7 +11,10 @@
 
 package com.andrew.apollo.ui.fragments.phone;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Toast;
 import com.andrew.apollo.R;
 import com.andrew.apollo.adapters.PagerAdapter;
 import com.andrew.apollo.adapters.PagerAdapter.MusicFragments;
@@ -70,6 +74,19 @@ public class MusicBrowserPhoneFragment extends Fragment implements
     public MusicBrowserPhoneFragment() {
     }
 
+    /*
+    * 用于调试的组件，正式发布版本中会去除此段代码
+    */
+    private ProgressDialog progressDialog;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            progressDialog.dismiss();
+            Toast.makeText(getActivity(), "Building cache complete!", Toast.LENGTH_LONG).show();
+        }
+    };
+
     /**
      * {@inheritDoc}
      */
@@ -78,6 +95,20 @@ public class MusicBrowserPhoneFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         // Get the preferences
         mPreferences = PreferenceUtils.getInstance(getActivity());
+        // 用于调试的组件，正式发布版本中会去除此段代码
+        progressDialog = ProgressDialog.show(getActivity(), "Building cache",
+                "Library out of date, rebuilding...", true, false);
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mHandler.sendEmptyMessage(0);
+            }
+        }.start();
     }
 
     /**

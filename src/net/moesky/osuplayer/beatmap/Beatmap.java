@@ -11,7 +11,6 @@
 
 package net.moesky.osuplayer.beatmap;
 
-import android.os.Looper;
 import android.util.Log;
 
 import java.util.*;
@@ -25,20 +24,20 @@ import java.io.*;
  */
 public class Beatmap {
 
-    private int version = 0;
-    private String fileName = "";
-    private String audioFileName = "";
-    private ArrayList<HitObject> hitObjects;
-    private ArrayList<TimingPoint> timingPoints;
-    private float sliderMultiplier = 1.0f;
-    private int hpDrainRate = 0;
-    private int circleSize = 0;
-    private int overallDifficulty = 0;
-    private int approachRate = 0;
-    private int audioOffset = 0;
-    private String soundType = "normal";
-    private String background = "";
-    private HashMap<String, String> metaData;
+    private int mVersion = 0;
+    private String mFileName = "";
+    private String mAudioFileName = "";
+    private ArrayList<HitObject> mHitObjects;
+    private ArrayList<TimingPoint> mTimingPoints;
+    private float mSliderMultiplier = 1.0f;
+    private int mHPDrainRate = 0;
+    private int mCircleSize = 0;
+    private int mOverallDifficulty = 0;
+    private int mApproachRate = 0;
+    private int mAudioOffset = 0;
+    private String mSoundType = "normal";
+    private String mBackground = "";
+    private HashMap<String, String> mMetaData;
     // Temporary not implement
     /**
 		private bool isTaikoMode = false;
@@ -50,23 +49,44 @@ public class Beatmap {
     private StringBuffer value = null;
 
     public Beatmap() {
-        hitObjects = new ArrayList<HitObject>();
-        timingPoints = new ArrayList<TimingPoint>();
-        metaData = new HashMap<String, String>();
+        mHitObjects = new ArrayList<HitObject>();
+        mTimingPoints = new ArrayList<TimingPoint>();
+        mMetaData = new HashMap<String, String>();
     }
 
     public Beatmap(String fileName) {
         this();
-        this.fileName = fileName;
+        this.mFileName = fileName;
         try {
-            LoadBeatmap();
+            loadBeatmap();
         } catch (IOException e) {
             Log.e("BeatmapIO", e.getMessage());
         }
     }
 
-    public void LoadBeatmap() throws IOException {
-        FileReader fileReader = new FileReader(fileName);
+    public void release() {
+        mFileName = null;
+        mAudioFileName = null;
+        mSoundType = null;
+        mBackground = null;
+        key = null;
+        value = null;
+        if (mHitObjects != null) {
+            mHitObjects.clear();
+            mHitObjects = null;
+        }
+        if (mTimingPoints != null) {
+            mTimingPoints.clear();
+            mTimingPoints = null;
+        }
+        if (mMetaData != null) {
+            mMetaData.clear();
+            mMetaData = null;
+        }
+    }
+
+    public void loadBeatmap() throws IOException {
+        FileReader fileReader = new FileReader(mFileName);
         BufferedReader buff = new BufferedReader(fileReader);
 
         String header = buff.readLine().trim();
@@ -75,7 +95,7 @@ public class Beatmap {
         if (!matcher.find()) {
             Log.e("BeatmapParsing", "Incompatible beatmap version.");
         }
-        version = Integer.parseInt(matcher.group(1));
+        mVersion = Integer.parseInt(matcher.group(1));
 
         String line;
         while ((line = buff.readLine()) != null) {
@@ -85,46 +105,46 @@ public class Beatmap {
             if (matcher.find()) {
                 String title = matcher.group(1);
                 if (title.equals("General")) {
-                    ParseGeneral(buff);
+                    parseGeneral(buff);
                 } else if (title.equals("Metadata")) {
                     // TODO: Metadata display on player
                 } else if (title.equals("Difficulty")) {
-                    ParseDifficulty(buff);
+                    parseDifficulty(buff);
                 } else if (title.equals("Events")) {
-                    ParseEvent(buff);
+                    parseEvent(buff);
                 } else if (title.equals("TimingPoints")) {
-                    ParseTimingPoints(buff);
+                    parseTimingPoints(buff);
                 } else if (title.equals("HitObjects")) {
-                    ParseHitObject(buff);
+                    parseHitObject(buff);
                 }
             }
         }
         buff.close();
     }
 
-    private void ParseGeneral(BufferedReader buff) throws IOException {
+    private void parseGeneral(BufferedReader buff) throws IOException {
         String line;
         while ((line = buff.readLine()) != null) {
             line = line.trim();
             if (line.equals("")) return;
 
-            SplitKeyValue(line);
+            splitKeyValue(line);
 
             if (key.toString().equals("AudioFilename")) {
-                audioFileName = value.toString();
+                mAudioFileName = value.toString();
             } else if (key.toString().equals("AudioLeadIn")) {
-                audioOffset = Integer.parseInt(value.toString());
+                mAudioOffset = Integer.parseInt(value.toString());
             } else if (key.toString().equals("PreviewTime")) {
                 // TODO: Start play on yellow line position
             } else if (key.toString().equals("Mode")) {
                 // TODO: Support for taiko mode
             } else if (key.toString().equals("SampleSet")) {
-                soundType = value.toString().toLowerCase();
+                mSoundType = value.toString().toLowerCase();
             }
         }
     }
 
-    private void ParseTimingPoints(BufferedReader buff) throws IOException {
+    private void parseTimingPoints(BufferedReader buff) throws IOException {
         String line;
         String info[];
         TimingPoint prevTimingPoint = null;
@@ -151,25 +171,25 @@ public class Beatmap {
             if (info.length > 5) {
                 tp.setVolume(info[5]);
             }
-            timingPoints.add(tp);
+            mTimingPoints.add(tp);
         }
     }
 
-    private void ParseDifficulty(BufferedReader buff) throws IOException {
+    private void parseDifficulty(BufferedReader buff) throws IOException {
         String line;
         while ((line = buff.readLine()) != null) {
             line = line.trim();
             if (line.equals("")) return;
 
-            SplitKeyValue(line);
+            splitKeyValue(line);
 
             if (key.toString().equals("SliderMultiplier")) {
-                sliderMultiplier = Float.parseFloat(value.toString());
+                mSliderMultiplier = Float.parseFloat(value.toString());
             }
         }
     }
 
-    private void ParseEvent(BufferedReader buff) throws IOException {
+    private void parseEvent(BufferedReader buff) throws IOException {
         String line;
         String info[];
         while ((line = buff.readLine()) != null) {
@@ -181,14 +201,14 @@ public class Beatmap {
                 Pattern pattern = Pattern.compile("[^\"]+\\.(jpg|png)");
                 Matcher matcher = pattern.matcher(line);
                 if (info[0].equals("0") && matcher.find()) {
-                    background = matcher.group(0);
-                    Log.i("BeatmapParse", background);
+                    mBackground = matcher.group(0);
+                    Log.i("BeatmapParse", mBackground);
                 }
             }
         }
     }
 
-    private void ParseHitObject(BufferedReader buff) throws IOException {
+    private void parseHitObject(BufferedReader buff) throws IOException {
         String line;
         String val[];
         int pos = 0;
@@ -199,13 +219,13 @@ public class Beatmap {
             val = line.split(",");
             int time = Integer.parseInt(val[2]);
 
-            while (pos < timingPoints.size() - 1
-                    && timingPoints.get(pos + 1).getBeginTime() <= time) {
+            while (pos < mTimingPoints.size() - 1
+                    && mTimingPoints.get(pos + 1).getBeginTime() <= time) {
                 ++pos;  // Set timing attribute for each hit object
             }
 
             int soundType = Integer.parseInt(val[3]);
-            hitObjects.addAll(createHitObjectCollection(soundType, timingPoints.get(pos), val));
+            mHitObjects.addAll(createHitObjectCollection(soundType, mTimingPoints.get(pos), val));
         }
     }
 
@@ -227,7 +247,7 @@ public class Beatmap {
             int baseTime = Integer.parseInt(info[2]);
             float sliderLength = Float.parseFloat(info[7]);
             int sliderCount = Integer.parseInt(info[6]) + 1;
-            float sliderTime = timingPoint.getBeatTime() * (sliderLength / sliderMultiplier) / 100;
+            float sliderTime = timingPoint.getBeatTime() * (sliderLength / mSliderMultiplier) / 100;
             String soundCollection[] = null;
             if (info.length > 8) {
                 soundCollection = info[8].split("\\|");
@@ -260,30 +280,30 @@ public class Beatmap {
         return objects;
     }
 
-    private void SplitKeyValue(String str) {
+    private void splitKeyValue(String str) {
         int index = str.indexOf(':');
         key = new StringBuffer(str.substring(0, index).trim());
         value = new StringBuffer(str.substring(index + 1, str.length()).trim());
     }
 
     public int getAudioOffset() {
-        return audioOffset;
+        return mAudioOffset;
     }
 
     public ArrayList<HitObject> getHitObjects() {
-        return hitObjects;
+        return mHitObjects;
     }
 
     public String getSoundType() {
-        return soundType;
+        return mSoundType;
     }
 
     public String getAudioFileName() {
-        return audioFileName;
+        return mAudioFileName;
     }
 
     public String getStoryBoard() {
-        return background;
+        return mBackground;
     }
 
 }

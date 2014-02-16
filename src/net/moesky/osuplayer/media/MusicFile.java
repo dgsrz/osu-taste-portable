@@ -25,66 +25,30 @@ public class MusicFile {
     private final static String TAG = "MusicPlayer";
     private final static boolean D = true;
 
-    /* Handler执行周期，数值越小越接近原始osu听感，同时更消耗系统资源 */
-    private final static int INTERVAL = 1;
-
-    /* 取消与HitSoundEffect同步 */
-    private final static int EVENT_CANCEL_SYNC = 1;
-
-    private AudioPlayer mAudioPlayer;
     private String mFileName;
     private int mStream;
-    private Handler mHandler;  // FIXME: 使用弱引用便于检查空指针
 
-    public MusicFile(final AudioPlayer audioPlayer, final String fileName, final Looper looper) {
+    public MusicFile(final String fileName) {
         BASS.BASS_StreamFree(mStream);
-        mAudioPlayer = audioPlayer;
         mFileName = fileName;
         mStream = BASS.BASS_StreamCreateFile(mFileName, 0, 0, 0);
-        mHandler = new Handler(looper) {
-            @Override
-            public void handleMessage(Message msg) {
-                if (D) Log.i(TAG, "Received cancel handler request.");
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    case EVENT_CANCEL_SYNC:
-                        this.removeCallbacks(refresh);
-                        break;
-                }
-            }
-        };
     }
-
-    private Runnable refresh = new Runnable() {
-        @Override
-        public void run() {
-            if (getChannelPosition() >= getChannelLength()) {
-                mAudioPlayer.getOnCompletionListener();
-                return;
-            }
-            mOnUpdateListener.onUpdate();
-            mHandler.postDelayed(refresh, MusicFile.INTERVAL);
-        }
-    };
 
     public void play() {
         if (mStream != 0) {
             BASS.BASS_ChannelPlay(mStream, false);
-            mHandler.post(refresh);
         }
     }
 
     public void stop() {
         if (isPlaying()) {
             BASS.BASS_ChannelStop(mStream);
-            mHandler.sendEmptyMessage(EVENT_CANCEL_SYNC);
         }
     }
 
     public void pause() {
         if (isPlaying()) {
             BASS.BASS_ChannelPause(mStream);
-            mHandler.sendEmptyMessage(EVENT_CANCEL_SYNC);
         }
     }
 
@@ -102,7 +66,6 @@ public class MusicFile {
     public void release() {
         stop();
         BASS.BASS_StreamFree(mStream);
-        setOnUpdateListener(null);
         mStream = 0;
         mFileName = null;
     }
@@ -137,14 +100,8 @@ public class MusicFile {
         return BASS.BASS_ChannelBytes2Seconds(mStream, position);
     }
 
-    public interface onUpdateListener {
-        void onUpdate();
+    public boolean isChannelEndPosition() {
+        return BASS.BASS_ChannelIsActive(mStream) == BASS.BASS_ACTIVE_STOPPED;
     }
-
-    public void setOnUpdateListener(onUpdateListener listener) {
-        mOnUpdateListener = listener;
-    }
-
-    private onUpdateListener mOnUpdateListener;
 
 }

@@ -339,7 +339,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         switch (item.getItemId()) {
             case android.R.id.home:
                 // Go back to the home activity
-                NavUtils.goHome(this);
+                // NavUtils.goHome(this);
+                onBackPressed();
+                finish();
                 return true;
             case R.id.menu_shuffle:
                 // Shuffle all the songs
@@ -387,7 +389,8 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        NavUtils.goHome(this);
+        // NavUtils.goHome(this);
+        // finish();
     }
 
     /**
@@ -538,9 +541,9 @@ public class AudioPlayerActivity extends FragmentActivity implements ServiceConn
         // Set the total time
         mTotalTime.setText(MusicUtils.makeTimeString(this, MusicUtils.duration() / 1000));
         // Set the album art
-        mImageFetcher.loadCurrentStoryBoard(mAlbumArt);
+        // mImageFetcher.loadCurrentStoryBoard(mAlbumArt);
         // Set the small artwork
-        mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
+        // mImageFetcher.loadCurrentArtwork(mAlbumArtSmall);
         // Update the current time
         queueNextRefresh(1);
 
