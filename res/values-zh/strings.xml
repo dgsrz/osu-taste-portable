@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">osu!屌炸天</string>
+    <string name="action_search">搜索</string>
+    <string name="action_refresh">刷新</string>
+    <string name="action_settings">设置</string>
+    <string name="action_exit">退出</string>
+    <string name="search_label">搜索曲库</string>
+    <string name="search_hint">输入关键字</string>
+    <string name="page_collections">聚合</string>
+    <string name="page_albums">专辑</string>
+    <string name="page_artists">艺术家</string>
+    <string name="page_directories">目录</string>
+    <string name="page_songs">歌曲</string>
+    <string name="page_splash_title">正在启动服务</string>
+    <string name="settings_ui_category">Category</string>
+    <string name="settings_color_scheme_summary">Summary</string>
+    <string name="settings_color_scheme_title">Title</string>
+    <string name="settings_theme_chooser_title">Theme chooser</string>
+</resources>

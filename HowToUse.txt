@@ -1,4 +1,4 @@
-建立libs目录，拷贝android-support-v4.jar到其中。
-再从http://www.un4seen.com/下载最新的BASS android versions
-拷贝bass24-android.zip中libs下的所有文件夹到libs文件夹中
-最后使用IntelliJ IDEA打开工程编译
+1、建立libs目录，拷贝android-support-v4.jar到其中。
+2、从http://www.un4seen.com/下载最新的BASS android versions，拷贝bass24-android.zip中libs下的所有文件夹到libs文件夹中
+3、使用IntelliJ IDEA建立Android工程，将ViewPagerIndicator项目作为模块导入，建立项目依赖关系
+4、编译测试

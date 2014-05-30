@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">osu!Taste</string>
+    <string name="action_search">Search</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_exit">Exit</string>
+    <string name="search_label">Search</string>
+    <string name="search_hint">Type keywords here</string>
+    <string name="page_collections">Collections</string>
+    <string name="page_albums">Albums</string>
+    <string name="page_artists">Artists</string>
+    <string name="page_directories">Directories</string>
+    <string name="page_songs">Songs</string>
+    <string name="page_splash_title">Starting service</string>
+    <string name="settings_ui_category">Category</string>
+    <string name="settings_color_scheme_summary">Summary</string>
+    <string name="settings_color_scheme_title">Title</string>
+    <string name="settings_theme_chooser_title">Theme chooser</string>
+</resources>

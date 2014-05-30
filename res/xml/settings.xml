@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- UI catetgory -->
+    <PreferenceCategory android:title="@string/settings_ui_category" >
+
+        <!-- Color scheme -->
+        <Preference
+                android:key="color_scheme"
+                android:summary="@string/settings_color_scheme_summary"
+                android:title="@string/settings_color_scheme_title" />
+        <!-- Theme chooser -->
+        <Preference
+                android:key="theme_chooser"
+                android:title="@string/settings_theme_chooser_title" />
+    </PreferenceCategory>
+</PreferenceScreen>
